@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.0 — 2026-06-02
+
+### Added
+
+- Synced skills from source.
+
+```
+permission-manager
+```
+
 ## 0.2.0 — 2026-06-02
 
 ### Added

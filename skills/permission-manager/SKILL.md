@@ -1,6 +1,7 @@
 ---
 name: permission-manager
-description: "Manage opencode permissions: review always-allow lists, suggest safe read-only commands, configure permission patterns"
+description: 'Manage opencode permissions: review always-allow lists, suggest safe
+  read-only commands, configure permission patterns'
 license: MIT
 ---
 
@@ -22,22 +23,7 @@ Use this when optimizing opencode's permission settings, reviewing allowed comma
 4. **Apply changes**: Edit the config to add/remove permission entries
 5. **Validate**: Ensure JSON is valid after changes
 
-## Safe Read-Only Commands (Common Candidates)
-
-Commands that only read information and don't modify files:
-- `ls*` - List directory contents
-- `git status*` - Show working tree status
-- `git log*` - Show commit history
-- `git diff*` - Show changes (without --check flag)
-- `git show*` - Show git objects
-- `git branch*` - List branches
-- `git remote*` - Show remotes
-- `rg *` / `grep *` - Search file contents
-- `find *` - Find files
-- `cat *`, `head *`, `tail *` - Read file contents
-- `stat *` - File metadata
-- `wc *` - Word/line counts
-- `tree *` - Directory tree
+Complements opencode's built-in allow/deny/ask permissions by auditing current config and recommending adjustments through conversation.
 
 ## Key Rules
 - Never allow commands that modify files, commit, push, or change system state
