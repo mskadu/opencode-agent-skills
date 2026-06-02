@@ -28,7 +28,7 @@ while IFS= read -r skill; do
   fi
 
   python3 -c "
-import sys, re
+import sys, yaml
 
 path = '$src'
 content = open(path).read()
@@ -38,30 +38,20 @@ if not content.startswith('---'):
     sys.exit(1)
 
 parts = content.split('---', 2)
-frontmatter = parts[1]
+frontmatter = yaml.safe_load(parts[1])
 
-if 'license:' not in frontmatter:
-    # Insert license after the first line (---) or after name/description
-    lines = frontmatter.split('\n')
-    # Find a good insertion point: after description or after name if no description
-    insert_after = -1
-    for i, line in enumerate(lines):
-        if line.startswith('description:') or line.startswith('description '):
-            insert_after = i
-            break
-    if insert_after < 0:
-        for i, line in enumerate(lines):
-            if line.startswith('name:') or line.startswith('name '):
-                insert_after = i
-                break
-    if insert_after < 0:
-        insert_after = 0
-    lines.insert(insert_after + 1, 'license: MIT')
-    frontmatter = '\n'.join(lines)
+if 'license' not in frontmatter:
+    frontmatter['license'] = 'MIT'
 
-parts[1] = frontmatter
 out_path = '$target_dir/SKILL.md'
-open(out_path, 'w').write('---'.join(parts))
+with open(out_path, 'w') as f:
+    f.write('---\\n')
+    f.write(yaml.dump(frontmatter, allow_unicode=True, default_flow_style=False, sort_keys=False))
+    f.write('---')
+    # Preserve everything after the frontmatter
+    if len(parts) > 2:
+        f.write(parts[2])
+
 print('  SKILL.md synced (license injected)')
 "
 
