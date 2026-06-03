@@ -4,7 +4,7 @@ A collection of OpenCode skills I've built from real use — things I reach for
 daily and have refined through trial and error. If something doesn't work for
 you, or you see a gap, open an issue or send a PR.
 
-> Current version: 0.3.0 — see [CHANGELOG](CHANGELOG.md)
+> Current version: 0.4.0 — see [CHANGELOG](CHANGELOG.md)
 
 ## Installation
 

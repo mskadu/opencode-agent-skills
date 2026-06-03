@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.4.0 — 2026-06-03
+
+### Added
+
+- Synced skills from source.
+
+```
+anti-sycophancy
+permission-manager
+skill-suggester
+smart-git-automation
+```
+
 ## 0.3.0 — 2026-06-02
 
 ### Added
