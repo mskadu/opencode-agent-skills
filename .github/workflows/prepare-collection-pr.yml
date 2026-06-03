@@ -80,6 +80,9 @@ jobs:
             exit 0
           fi
           git commit -m "Sync skills from mskadu/opencode-agent-skills"
+          # Embed PAT in remote URL so git push can authenticate
+          git remote set-url origin \
+            "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY_OWNER}/opencode-skills-collection.git"
           git push origin HEAD:main --force
 
       - name: Write PR body
