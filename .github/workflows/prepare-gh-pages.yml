@@ -1,5 +1,10 @@
 name: Prepare GitHub Pages publish
 on:
+  push:
+    branches: [main]
+    paths:
+      - skills/**
+      - SKILL_MANIFEST
   workflow_dispatch:
     inputs:
       version:
