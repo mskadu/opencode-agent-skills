@@ -47,7 +47,8 @@ jobs:
           git config user.email "actions@github.com"
           git config user.name "GitHub Actions"
           git remote add upstream \
-            https://github.com/FrancoStino/opencode-skills-collection.git
+            https://github.com/FrancoStino/opencode-skills-collection.git \
+            2>/dev/null || true
           echo "collection_dir=$collection_dir" >> "$GITHUB_OUTPUT"
         id: collection
 
