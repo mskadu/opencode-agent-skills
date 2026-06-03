@@ -1,0 +1,11 @@
+{
+  "skills": [
+    {
+      "name": "permission-manager",
+      "files": [
+        "README.md",
+        "SKILL.md"
+      ]
+    }
+  ]
+}
