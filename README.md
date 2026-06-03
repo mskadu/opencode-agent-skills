@@ -8,20 +8,40 @@ you, or you see a gap, open an issue or send a PR.
 
 ## Installation
 
-```bash
-# One-liner
-curl -fsSL https://raw.githubusercontent.com/mskadu/opencode-agent-skills/main/install.sh | bash
+### Quickest — npx skills
 
-# Or manual
+```bash
+# List available skills
+npx skills add mskadu/opencode-agent-skills --list
+
+# Install a specific skill to OpenCode
+npx skills add mskadu/opencode-agent-skills --skill permission-manager --agent opencode
+
+# Install all skills globally
+npx skills add mskadu/opencode-agent-skills --all -g -y
+```
+
+### One-liner
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/mskadu/opencode-agent-skills/main/install.sh | bash
+```
+
+### Manual
+
+```bash
 git clone https://github.com/mskadu/opencode-agent-skills.git
 cp -r opencode-agent-skills/skills/* ~/.config/opencode/skills/
 ```
 
 ## Skills
 
-| Skill | Description | Category |
-|-------|-------------|----------|
-| [permission-manager](skills/permission-manager/) | Review, configure, and audit OpenCode permission settings and always-allow lists | development |
+| Skill | Description | Risk |
+|-------|-------------|------|
+| [anti-sycophancy](skills/anti-sycophancy/) | Eliminate sycophantic agreement patterns in AI responses | safe |
+| [permission-manager](skills/permission-manager/) | Review, configure, and audit OpenCode permission settings | critical |
+| [skill-suggester](skills/skill-suggester/) | Scan prompt history for recurring patterns, propose new skills | safe |
+| [smart-git-automation](skills/smart-git-automation/) | Smart change detection, auto branch naming, streamlined commit/PR | critical |
 
 ## Requirements
 
