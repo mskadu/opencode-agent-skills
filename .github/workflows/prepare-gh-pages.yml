@@ -16,6 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          path: source
 
       - uses: actions/setup-python@v5
         with:
@@ -24,33 +26,43 @@ jobs:
       - run: pip install pyyaml
 
       - name: Generate pages content
-        run: python scripts/generate-index.py --output "$PWD/pages-dist"
+        run: python source/scripts/generate-index.py --output "$PWD/pages-dist"
 
-      - name: Ensure gh-pages branch exists
-        run: |
-          if ! git ls-remote --exit-code origin gh-pages > /dev/null 2>&1; then
-            git config user.email "actions@github.com"
-            git config user.name "GitHub Actions"
-            readonly current_branch=$(git rev-parse --abbrev-ref HEAD)
-            git checkout --orphan gh-pages-init
-            git rm -rf . > /dev/null 2>&1 || true
-            git commit --allow-empty -m "Initialize gh-pages branch"
-            git push origin gh-pages-init:gh-pages
-            git checkout -f "$current_branch"
-            echo "Created gh-pages branch"
-          fi
-
-      - name: Create Pull Request to gh-pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Checkout gh-pages branch
+        id: checkout-gh-pages
+        uses: actions/checkout@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./pages-dist
-          enable_pull_request: true
-          pull_request_branch: publish/gh-pages
-          destination_branch: gh-pages
-          commit_message: "Update skills index"
-          pull_request_title: "Publish skills index"
-          pull_request_body: |
+          ref: gh-pages
+          path: pages-repo
+        continue-on-error: true
+
+      - name: Create gh-pages orphan branch if missing
+        if: steps.checkout-gh-pages.outcome == 'failure'
+        run: |
+          mkdir -p pages-repo
+          cd pages-repo
+          git init -b gh-pages
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
+          git commit --allow-empty -m "Initialize gh-pages branch"
+
+      - name: Apply generated content
+        run: |
+          cd pages-repo
+          # Remove all files except .git
+          find . -maxdepth 1 -not -name '.git' -not -name '.' -exec rm -rf {} +
+          # Copy generated content (preserves dotfiles like .nojekyll)
+          rsync -a --quiet "${{ github.workspace }}/pages-dist/" .
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          path: pages-repo
+          commit-message: "Update skills index"
+          branch: publish/gh-pages
+          base: gh-pages
+          title: "Publish skills index"
+          body: |
             Automated PR to update GitHub Pages content.
 
             Generated from `skills/` directory.
@@ -58,5 +70,3 @@ jobs:
 
             Review the changes below before merging.
             After merge, GitHub Pages deploys automatically from the `gh-pages` branch.
-
-            > **First time?** Go to repo Settings > Pages and set "Deploy from branch: gh-pages / / (root)".
