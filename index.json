@@ -1,7 +1,28 @@
 {
   "skills": [
     {
+      "name": "anti-sycophancy",
+      "files": [
+        "README.md",
+        "SKILL.md"
+      ]
+    },
+    {
       "name": "permission-manager",
+      "files": [
+        "README.md",
+        "SKILL.md"
+      ]
+    },
+    {
+      "name": "skill-suggester",
+      "files": [
+        "README.md",
+        "SKILL.md"
+      ]
+    },
+    {
+      "name": "smart-git-automation",
       "files": [
         "README.md",
         "SKILL.md"
