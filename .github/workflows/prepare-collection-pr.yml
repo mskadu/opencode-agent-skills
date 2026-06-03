@@ -94,23 +94,28 @@ jobs:
             sed 's/^/- /' "${{ github.workspace }}/source/SKILL_MANIFEST"
           } > /tmp/pr_body.md
 
-      - name: Create Pull Request
+      - name: Create or update Pull Request
         run: |
-          pr_url=$(gh pr list \
+          pr_url=$(gh pr create \
             --repo FrancoStino/opencode-skills-collection \
             --head "${{ github.repository_owner }}:main" \
             --base main \
-            --json url --jq '.[0].url' 2>/dev/null)
-          if [ -z "$pr_url" ]; then
-            pr_url=$(gh pr create \
+            --title "Sync skills from mskadu/opencode-agent-skills" \
+            --body-file /tmp/pr_body.md 2>&1) || true
+
+          if echo "$pr_url" | grep -q "already exists"; then
+            # PR exists — just update the body
+            existing_url=$(gh pr list \
               --repo FrancoStino/opencode-skills-collection \
               --head "${{ github.repository_owner }}:main" \
               --base main \
-              --title "Sync skills from mskadu/opencode-agent-skills" \
-              --body-file /tmp/pr_body.md)
-            echo "PR created: $pr_url"
+              --json url --jq '.[0].url')
+            gh pr edit "$existing_url" \
+              --body-file /tmp/pr_body.md
+            pr_url="$existing_url"
+            echo "PR updated: $pr_url"
           else
-            echo "PR already exists: $pr_url"
+            echo "PR created: $pr_url"
           fi
           echo "pr_url=$pr_url" >> "$GITHUB_OUTPUT"
         id: pr
