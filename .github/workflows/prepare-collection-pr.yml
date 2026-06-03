@@ -96,25 +96,28 @@ jobs:
 
       - name: Create or update Pull Request
         run: |
-          pr_url=$(gh pr create \
-            --repo FrancoStino/opencode-skills-collection \
-            --head "${{ github.repository_owner }}:main" \
-            --base main \
-            --title "Sync skills from mskadu/opencode-agent-skills" \
-            --body-file /tmp/pr_body.md 2>&1) || true
+          body_content=$(cat /tmp/pr_body.md)
+          response=$(gh api repos/FrancoStino/opencode-skills-collection/pulls \
+            --field title="Sync skills from mskadu/opencode-agent-skills" \
+            --field head="${{ github.repository_owner }}:main" \
+            --field base=main \
+            --field body="$body_content" \
+            --jq '.html_url' 2>&1) || true
 
-          if echo "$pr_url" | grep -q "already exists"; then
-            # PR exists — just update the body
-            existing_url=$(gh pr list \
-              --repo FrancoStino/opencode-skills-collection \
-              --head "${{ github.repository_owner }}:main" \
-              --base main \
-              --json url --jq '.[0].url')
-            gh pr edit "$existing_url" \
-              --body-file /tmp/pr_body.md
-            pr_url="$existing_url"
+          if echo "$response" | grep -q "already_exists\|already exists"; then
+            # PR exists — update the body
+            pr_num=$(gh api repos/FrancoStino/opencode-skills-collection/pulls \
+              --jq '.[0].number' \
+              --method GET \
+              --field head="${{ github.repository_owner }}:main" \
+              --field base=main)
+            gh api "repos/FrancoStino/opencode-skills-collection/pulls/$pr_num" \
+              --method PATCH \
+              --field body="$body_content" > /dev/null
+            pr_url="https://github.com/FrancoStino/opencode-skills-collection/pull/$pr_num"
             echo "PR updated: $pr_url"
           else
+            pr_url="$response"
             echo "PR created: $pr_url"
           fi
           echo "pr_url=$pr_url" >> "$GITHUB_OUTPUT"
