@@ -1,0 +1,62 @@
+name: Prepare GitHub Pages publish
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version override (leave empty to use VERSION file)
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - run: pip install pyyaml
+
+      - name: Generate pages content
+        run: python scripts/generate-index.py --output "$PWD/pages-dist"
+
+      - name: Ensure gh-pages branch exists
+        run: |
+          if ! git ls-remote --exit-code origin gh-pages > /dev/null 2>&1; then
+            git config user.email "actions@github.com"
+            git config user.name "GitHub Actions"
+            readonly current_branch=$(git rev-parse --abbrev-ref HEAD)
+            git checkout --orphan gh-pages-init
+            git rm -rf . > /dev/null 2>&1 || true
+            git commit --allow-empty -m "Initialize gh-pages branch"
+            git push origin gh-pages-init:gh-pages
+            git checkout -f "$current_branch"
+            echo "Created gh-pages branch"
+          fi
+
+      - name: Create Pull Request to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./pages-dist
+          enable_pull_request: true
+          pull_request_branch: publish/gh-pages
+          destination_branch: gh-pages
+          commit_message: "Update skills index"
+          pull_request_title: "Publish skills index"
+          pull_request_body: |
+            Automated PR to update GitHub Pages content.
+
+            Generated from `skills/` directory.
+            See `SKILL_MANIFEST` for the list of published skills.
+
+            Review the changes below before merging.
+            After merge, GitHub Pages deploys automatically from the `gh-pages` branch.
+
+            > **First time?** Go to repo Settings > Pages and set "Deploy from branch: gh-pages / / (root)".

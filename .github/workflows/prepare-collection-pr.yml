@@ -1,0 +1,112 @@
+name: Prepare FrancoStino Collection PR
+on:
+  workflow_dispatch:
+    inputs:
+      date_added:
+        description: Date override (YYYY-MM-DD, leave empty for today)
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GH_PAT }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: source
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - run: pip install pyyaml
+
+      - name: Fork and clone collection repo
+        run: |
+          collection_dir="${{ runner.temp }}/collection-repo"
+          owner="${{ github.repository_owner }}"
+
+          # Fork (no-op if already exists, --default-branch-only is faster)
+          gh repo fork FrancoStino/opencode-skills-collection \
+            --default-branch-only 2>/dev/null || true
+
+          # Clone the fork (fall back to upstream if fork somehow missing)
+          if ! gh repo clone "$owner/opencode-skills-collection" "$collection_dir" 2>/dev/null; then
+            echo "Fork not found, cloning upstream directly"
+            git clone \
+              "https://github.com/FrancoStino/opencode-skills-collection.git" \
+              "$collection_dir"
+          fi
+
+          cd "$collection_dir"
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
+          git remote add upstream \
+            https://github.com/FrancoStino/opencode-skills-collection.git
+          echo "collection_dir=$collection_dir" >> "$GITHUB_OUTPUT"
+        id: collection
+
+      - name: Copy skills to bundled-skills
+        run: |
+          cd "${{ steps.collection.outputs.collection_dir }}"
+          mkdir -p bundled-skills
+          for skill_dir in "${{ github.workspace }}/source/skills/"*/; do
+            name="$(basename "$skill_dir")"
+            [ "$name" = "*" ] && continue
+            rm -rf "bundled-skills/$name"
+            cp -r "$skill_dir" "bundled-skills/$name"
+            echo "Copied: $name"
+          done
+
+      - name: Update skills_index.json
+        run: |
+          python "${{ github.workspace }}/source/scripts/update-collection-index.py" \
+            "${{ steps.collection.outputs.collection_dir }}" \
+            "${{ github.workspace }}/source/skills" \
+            "${{ inputs.date_added || '' }}"
+
+      - name: Commit and push
+        run: |
+          cd "${{ steps.collection.outputs.collection_dir }}"
+          git add .
+          if git diff --cached --quiet; then
+            echo "No changes to publish"
+            exit 0
+          fi
+          git commit -m "Sync skills from mskadu/opencode-agent-skills"
+          git push origin HEAD:main --force
+
+      - name: Write PR body
+        run: |
+          {
+            echo "Automated sync from mskadu/opencode-agent-skills"
+            echo ""
+            echo "Skills synced:"
+            sed 's/^/- /' "${{ github.workspace }}/source/SKILL_MANIFEST"
+          } > /tmp/pr_body.md
+
+      - name: Create Pull Request
+        run: |
+          pr_url=$(gh pr list \
+            --repo FrancoStino/opencode-skills-collection \
+            --head "${{ github.repository_owner }}:main" \
+            --base main \
+            --json url --jq '.[0].url' 2>/dev/null)
+          if [ -z "$pr_url" ]; then
+            pr_url=$(gh pr create \
+              --repo FrancoStino/opencode-skills-collection \
+              --head "${{ github.repository_owner }}:main" \
+              --base main \
+              --title "Sync skills from mskadu/opencode-agent-skills" \
+              --body-file /tmp/pr_body.md)
+            echo "PR created: $pr_url"
+          else
+            echo "PR already exists: $pr_url"
+          fi
+          echo "pr_url=$pr_url" >> "$GITHUB_OUTPUT"
+        id: pr

@@ -1,0 +1,37 @@
+name: Prepare Release
+on:
+  push:
+    branches: [main]
+    paths: [VERSION]
+
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read version
+        id: version
+        run: echo "value=$(cat VERSION)" >> "$GITHUB_OUTPUT"
+
+      - name: Extract changelog entry
+        run: |
+          awk -v ver="${{ steps.version.outputs.value }}" '
+            /^## [0-9]+\.[0-9]+\.[0-9]+/ {
+              if ($0 ~ "^## " ver) { found=1; next }
+              if (found) { exit }
+            }
+            found' CHANGELOG.md > /tmp/release_body.md
+          echo "Extracted $(wc -l < /tmp/release_body.md) lines"
+
+      - name: Create Draft Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version.outputs.value }}
+          name: v${{ steps.version.outputs.value }}
+          body_path: /tmp/release_body.md
+          draft: true
+          make_latest: false
