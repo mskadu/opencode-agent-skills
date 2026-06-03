@@ -36,7 +36,7 @@ def update_index(collection_dir, skills_dir, date_added=None):
     with open(index_path) as f:
         index = json.load(f)
 
-    if date_added is None:
+    if not date_added:
         from datetime import date
 
         date_added = date.today().isoformat()
