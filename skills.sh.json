@@ -1,0 +1,28 @@
+{
+  "$schema": "https://skills.sh/schemas/skills.sh.schema.json",
+  "notGrouped": "bottom",
+  "groupings": [
+    {
+      "title": "Safety & Quality",
+      "description": "Skills for improving agent output quality and reducing harmful patterns.",
+      "skills": [
+        "anti-sycophancy"
+      ]
+    },
+    {
+      "title": "Configuration & Security",
+      "description": "Skills for managing agent configuration, permissions, and security.",
+      "skills": [
+        "permission-manager"
+      ]
+    },
+    {
+      "title": "Workflow & Automation",
+      "description": "Skills that automate repetitive development workflows.",
+      "skills": [
+        "skill-suggester",
+        "smart-git-automation"
+      ]
+    }
+  ]
+}

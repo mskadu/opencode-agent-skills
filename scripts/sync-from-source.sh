@@ -64,6 +64,10 @@ print('  SKILL.md synced (license injected)')
 
 done < "$MANIFEST"
 
+# Generate skills.sh.json from manifest
+echo "Generating skills.sh.json..."
+python3 "$ROOT/scripts/generate-skills-sh-json.py"
+
 # Bump version
 bash "$ROOT/scripts/bump-version.sh"
 
