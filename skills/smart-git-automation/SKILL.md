@@ -1,7 +1,7 @@
 ---
 name: smart-git-automation
-description: Smart change detection, auto branch naming, and streamlined commit/PR
-  workflow
+version: 1.0.0
+description: "Smart change detection, auto branch naming, and streamlined commit/PR workflow"
 risk: critical
 license: MIT
 ---

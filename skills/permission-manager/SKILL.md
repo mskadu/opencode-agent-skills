@@ -1,7 +1,7 @@
 ---
 name: permission-manager
-description: 'Manage opencode permissions: review always-allow lists, suggest safe
-  read-only commands, configure permission patterns'
+version: 1.0.0
+description: "Manage opencode permissions: review always-allow lists, suggest safe read-only commands, configure permission patterns"
 risk: critical
 license: MIT
 ---

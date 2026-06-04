@@ -1,11 +1,8 @@
 ---
 name: anti-sycophancy
 version: 2.0.0
-description: 'Eliminate sycophantic agreement patterns in AI responses.
-
-  Load via /skill anti-sycophancy.
-
-  '
+description: "Eliminate sycophantic agreement patterns in AI responses. Load via /skill anti-sycophancy."
+risk: safe
 license: MIT
 compatibility: opencode
 ---

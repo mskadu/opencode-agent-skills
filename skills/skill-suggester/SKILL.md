@@ -1,7 +1,8 @@
 ---
 name: skill-suggester
-description: Scan prompt history for recurring patterns and unmet needs, then propose
-  new skills or command templates
+version: 1.0.0
+description: "Scan prompt history for recurring patterns and unmet needs, then propose new skills or command templates"
+risk: safe
 license: MIT
 ---
 
