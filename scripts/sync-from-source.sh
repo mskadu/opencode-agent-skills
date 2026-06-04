@@ -94,3 +94,7 @@ EOF
 mv /tmp/changelog_new.md "$changelog"
 
 echo "Sync complete. Version bumped to $(cat "$ROOT/VERSION")."
+echo ""
+echo "---"
+echo "Reminder: run the following to update skills.sh telemetry:"
+echo "  npx skills add mskadu/opencode-agent-skills --yes"
