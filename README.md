@@ -41,6 +41,7 @@ cp -r opencode-agent-skills/skills/* ~/.config/opencode/skills/
 | [anti-sycophancy](skills/anti-sycophancy/) | Eliminate sycophantic agreement patterns in AI responses | safe |
 | [permission-manager](skills/permission-manager/) | Review, configure, and audit OpenCode permission settings | critical |
 | [skill-suggester](skills/skill-suggester/) | Scan prompt history for recurring patterns, propose new skills | safe |
+| [ollama-sync](skills/ollama-sync/) | Synchronize Ollama model list with OpenCode configuration | safe |
 | [smart-git-automation](skills/smart-git-automation/) | Smart change detection, auto branch naming, streamlined commit/PR | critical |
 
 ## Requirements
