@@ -1,6 +1,7 @@
 index.json
 .nojekyll
 anti-sycophancy/
+ollama-sync/
 permission-manager/
 skill-suggester/
 smart-git-automation/
