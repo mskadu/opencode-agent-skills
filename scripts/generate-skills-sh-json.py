@@ -27,7 +27,7 @@ GROUPS = [
     {
         "title": "Workflow & Automation",
         "description": "Skills that automate repetitive development workflows.",
-        "keywords": ["suggest", "skill", "workflow", "automation", "git"],
+        "keywords": ["suggest", "skill", "workflow", "automation", "sync", "git"],
     },
 ]
 

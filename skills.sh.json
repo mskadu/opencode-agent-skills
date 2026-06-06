@@ -21,7 +21,8 @@
       "description": "Skills that automate repetitive development workflows.",
       "skills": [
         "skill-suggester",
-        "smart-git-automation"
+        "smart-git-automation",
+        "ollama-sync"
       ]
     }
   ]
