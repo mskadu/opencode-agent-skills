@@ -8,6 +8,13 @@
       ]
     },
     {
+      "name": "ollama-sync",
+      "files": [
+        "README.md",
+        "SKILL.md"
+      ]
+    },
+    {
       "name": "permission-manager",
       "files": [
         "README.md",
